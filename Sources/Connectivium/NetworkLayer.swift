@@ -37,14 +37,14 @@ extension Endpoint: CustomStringConvertible {
 }
 
 public class NetworkManager {
-    internal enum Error: LocalizedError {
+    public enum Error: LocalizedError {
         case badURL(string: String)
         case badResponse(code: Int)
         case swiftError(error: Swift.Error)
         case noData
 
         /// A localized message describing what error occurred.
-        var errorDescription: String? {
+        public var errorDescription: String? {
             switch self {
             case .badURL(let url):
                 return "The url \(url) is invalid"
@@ -58,7 +58,7 @@ public class NetworkManager {
         }
 
         /// A localized message describing the reason for the failure.
-        var failureReason: String? {
+        public var failureReason: String? {
             switch self {
             case .badURL:
                 return "The server may be unresponsive or the URL does not exist"
@@ -77,12 +77,12 @@ public class NetworkManager {
         }
 
         /// A localized message describing how one might recover from the failure.
-        var recoverySuggestion: String? {
+        public var recoverySuggestion: String? {
             return "Please try again later"
         }
 
         /// A localized message providing "help" text if the user requests help.
-        var helpAnchor: String? {
+        public var helpAnchor: String? {
             nil
         }
     }
