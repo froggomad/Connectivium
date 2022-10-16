@@ -90,6 +90,7 @@ public class NetworkManager {
     internal static var session: URLSession = .shared
 
     @available(macOS 12.0, *)
+    @available(iOS 15.0, *)
     internal static func get(_ endpoint: Endpoint) async throws -> Data {
         guard let url = URL(string: endpoint.rawValue) else {
             throw Error.badURL(string: endpoint.rawValue)
