@@ -97,7 +97,7 @@ public class NetworkManager {
         }
         var request = URLRequest(url: url)
         for header in headers {
-            request.addValue(header.key, forHTTPHeaderField: header.value)
+            request.addValue(header.value, forHTTPHeaderField: header.key)
         }
 
         do {
