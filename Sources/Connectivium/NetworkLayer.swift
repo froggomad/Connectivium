@@ -91,23 +91,30 @@ public class NetworkManager {
 
     @available(macOS 12.0, *)
     @available(iOS 15.0, *)
-    internal static func get(_ endpoint: Endpoint) async throws -> Data {
+    internal static func get(_ endpoint: Endpoint, headers: [String:String] = [:]) async throws -> Data {
         guard let url = URL(string: endpoint.rawValue) else {
             throw Error.badURL(string: endpoint.rawValue)
         }
+        var request = URLRequest(url: url)
+        for header in headers {
+            request.addValue(header.key, forHTTPHeaderField: header.value)
+        }
 
         do {
-            return try await session.data(from: url).0
+            return try await session.data(for: request).0
         } catch let sessionError {
             let error = Error.swiftError(error: sessionError)
             throw error
         }
     }
 
-    internal static func get(_ endpoint: Endpoint, completion: @escaping (Result<Data, Error>) -> Void) {
+    internal static func get(_ endpoint: Endpoint, headers: [String:String] = [:], completion: @escaping (Result<Data, Error>) -> Void) {
         do {
             let url = try endpoint.url()
-            let request = URLRequest(url: url)
+            var request = URLRequest(url: url)
+            for header in headers {
+                request.addValue(header.key, forHTTPHeaderField: header.value)
+            }
 
             session.dataTask(with: request) { data, response, error in
                 guard error == nil else {

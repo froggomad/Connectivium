@@ -55,6 +55,21 @@ final class ConnectiviumTests: XCTestCase {
         wait(for: [expectation], timeout: 3.0)
     }
 
+    @available(macOS 12.0, *)
+    @available(iOS 15.0, *)
+    func testHeadersAreAdded_toAsyncGet() async throws {
+        let headers = [
+            "test": "value",
+            "test2": "value"
+        ]
+        do {
+            let data = try await Connectivium.get(goodEndpoint, headers: headers)
+            XCTAssertNotNil(data)
+        } catch {
+            XCTFail(error.localizedDescription)
+        }
+    }
+
     private func badResult(data: Data) -> String {
         "expected failure, but got \(String(data: data, encoding: .utf8) ?? "Nothing")"
     }
