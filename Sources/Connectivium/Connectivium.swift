@@ -4,6 +4,7 @@ public struct Connectivium {
     public init() { }
 
     @available(macOS 12.0, *)
+    @available(iOS 15.0, *)
     static func get(_ endpoint: Endpoint) async throws -> Data {
         try await NetworkManager.get(endpoint)
     }

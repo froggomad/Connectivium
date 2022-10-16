@@ -6,6 +6,7 @@ final class ConnectiviumTests: XCTestCase {
     let badEndpoint = Endpoint("https://www.googleasdfafas2342!.com")
 
     @available(macOS 12.0, *)
+    @available(iOS 15.0, *)
     func testAsyncGetEndpoint() async throws {
         do {
             let data = try await Connectivium.get(goodEndpoint)
@@ -30,6 +31,7 @@ final class ConnectiviumTests: XCTestCase {
     }
 
     @available(macOS 12.0, *)
+    @available(iOS 15.0, *)
     func testAsync_withBadURL_throws() async throws {
         do {
             let data = try await Connectivium.get(badEndpoint)
