@@ -92,15 +92,8 @@ public class NetworkManager {
     @available(macOS 12.0, *)
     @available(iOS 15.0, *)
     internal static func get(_ endpoint: Endpoint, headers: [String:String] = [:]) async throws -> Data {
-        guard let url = URL(string: endpoint.rawValue) else {
-            throw Error.badURL(string: endpoint.rawValue)
-        }
-        var request = URLRequest(url: url)
-        for header in headers {
-            request.addValue(header.value, forHTTPHeaderField: header.key)
-        }
-
         do {
+            let request = try composeRequest(using: endpoint, headers: headers)
             return try await session.data(for: request).0
         } catch let sessionError {
             let error = Error.swiftError(error: sessionError)
@@ -110,11 +103,7 @@ public class NetworkManager {
 
     internal static func get(_ endpoint: Endpoint, headers: [String:String] = [:], completion: @escaping (Result<Data, Error>) -> Void) {
         do {
-            let url = try endpoint.url()
-            var request = URLRequest(url: url)
-            for header in headers {
-                request.addValue(header.key, forHTTPHeaderField: header.value)
-            }
+            let request = try composeRequest(using: endpoint, headers: headers)
 
             session.dataTask(with: request) { data, response, error in
                 guard error == nil else {
@@ -139,5 +128,16 @@ public class NetworkManager {
             completion(.failure(.badURL(string: endpoint.rawValue)))
             return
         }
+    }
+
+    internal static func composeRequest(using endpoint: Endpoint, headers: [String: String]) throws -> URLRequest {
+        guard let url = URL(string: endpoint.rawValue) else {
+            throw Error.badURL(string: endpoint.rawValue)
+        }
+        var request = URLRequest(url: url)
+        for header in headers {
+            request.addValue(header.value, forHTTPHeaderField: header.key)
+        }
+        return request
     }
 }

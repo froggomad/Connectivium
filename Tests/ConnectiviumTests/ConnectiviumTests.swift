@@ -4,13 +4,17 @@ import XCTest
 final class ConnectiviumTests: XCTestCase {
     let goodEndpoint = Endpoint("https://www.google.com")
     let badEndpoint = Endpoint("https://www.googleasdfafas2342!.com")
+    let headers = [
+        "test": "value",
+        "test2": "value"
+    ]
 
     @available(macOS 12.0, *)
     @available(iOS 15.0, *)
     func testAsyncGetEndpoint() async throws {
         do {
             let data = try await Connectivium.get(goodEndpoint)
-            XCTAssertNotEqual(data, Data())
+            XCTAssertNotEqual(data, Data(), "The Data was empty")
         } catch {
             XCTFail(error.localizedDescription)
         }
@@ -22,7 +26,7 @@ final class ConnectiviumTests: XCTestCase {
             expectation.fulfill()
             switch result {
             case .success(let data):
-                XCTAssertNotEqual(data, Data())
+                XCTAssertNotEqual(data, Data(), "The Data was empty")
             case .failure(let error):
                 XCTFail(error.localizedDescription)
             }
@@ -37,7 +41,7 @@ final class ConnectiviumTests: XCTestCase {
             let data = try await Connectivium.get(badEndpoint)
             XCTFail(badResult(data: data))
         } catch {
-            XCTAssertNotNil(error)
+            XCTAssertNotNil(error.localizedDescription, "Expected an error, but got data")
         }
     }
 
@@ -49,24 +53,25 @@ final class ConnectiviumTests: XCTestCase {
             case .success(let data):
                 XCTFail(self.badResult(data: data))
             case .failure(let error):
-                XCTAssertNotNil(error)
+                XCTAssertNotNil(error, "Expected an error")
             }
         }
         wait(for: [expectation], timeout: 3.0)
     }
 
-    @available(macOS 12.0, *)
-    @available(iOS 15.0, *)
-    func testHeadersAreAdded_toAsyncGet() async throws {
-        let headers = [
-            "test": "value",
-            "test2": "value"
-        ]
+    func testHeadersAreAdded_toRequest() throws {
         do {
-            let data = try await Connectivium.get(goodEndpoint, headers: headers)
-            XCTAssertNotNil(data)
+            let request = try NetworkManager.composeRequest(using: goodEndpoint, headers: headers)
+            XCTAssertEqual(request.allHTTPHeaderFields, headers, "The request's headers do not match")
         } catch {
             XCTFail(error.localizedDescription)
+        }
+    }
+
+    func testURLIsComposed_fromEndpoint() throws {
+        do {
+            let request = try NetworkManager.composeRequest(using: goodEndpoint, headers: [:])
+            XCTAssertEqual(request.url, try goodEndpoint.url(), "The request URL doesn't match the endpoint URL")
         }
     }
 
