@@ -48,13 +48,13 @@ final class ConnectiviumTests: XCTestCase {
     func testCompletion_withBadURL_throws() throws {
         let expectation = self.expectation(description: #function)
         Connectivium.get(badEndpoint) { result in
-            expectation.fulfill()
             switch result {
             case .success(let data):
                 XCTFail(self.badResult(data: data))
             case .failure(let error):
                 XCTAssertNotNil(error, "Expected an error")
             }
+            expectation.fulfill()
         }
         wait(for: [expectation], timeout: 3.0)
     }
