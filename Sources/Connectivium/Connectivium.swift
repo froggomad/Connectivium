@@ -12,4 +12,8 @@ public struct Connectivium {
     public static func get(_ endpoint: Endpoint, headers: [String:String] = [:], completion: @escaping (Result<Data, NetworkManager.Error>) -> Void) {
         NetworkManager.get(endpoint, headers: headers, completion: completion)
     }
+
+    public static func set(session: URLSession) {
+        NetworkManager.session = session
+    }
 }
